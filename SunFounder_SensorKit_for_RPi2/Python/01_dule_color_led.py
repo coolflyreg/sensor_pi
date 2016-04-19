@@ -5,13 +5,13 @@ import time
 #colors = [0xFF00, 0x00FF, 0x0FF0, 0xF00F]
 Green = 0x00FF
 Red = 0xFF00
-
+Off = 0x0000
 pins = {'pin_R':11, 'pin_G':12}  # pins is a dict
 
 GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
 for i in pins:
 	GPIO.setup(pins[i], GPIO.OUT)   # Set pins' mode is output
-	GPIO.output(pins[i], GPIO.HIGH) # Set pins to high(+3.3V) to off led
+	#GPIO.output(pins[i], GPIO.HIGH) # Set pins to high(+3.3V) to off led
 
 p_R = GPIO.PWM(pins['pin_R'], 2000)  # set Frequece to 2KHz
 p_G = GPIO.PWM(pins['pin_G'], 2000)
@@ -34,9 +34,9 @@ def setColor(col):   # For example : col = 0x112233
 
 def loop():
 	while True:
-		setColor(Red)
-		time.sleep(1)
 		setColor(Green)
+		time.sleep(1)
+		setColor(Off)
 		time.sleep(1)
 
 def destroy():
