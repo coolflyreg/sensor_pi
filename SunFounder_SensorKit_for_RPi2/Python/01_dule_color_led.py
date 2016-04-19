@@ -2,7 +2,10 @@
 import RPi.GPIO as GPIO
 import time
 
-colors = [0xFF00, 0x00FF, 0x0FF0, 0xF00F]
+#colors = [0xFF00, 0x00FF, 0x0FF0, 0xF00F]
+Green = 0x00FF
+Red = 0xFF00
+
 pins = {'pin_R':11, 'pin_G':12}  # pins is a dict
 
 GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
@@ -31,9 +34,10 @@ def setColor(col):   # For example : col = 0x112233
 
 def loop():
 	while True:
-		for col in colors:
-			setColor(col)
-			time.sleep(0.5)
+		setColor(Red)
+		time.sleep(1)
+		setColor(Green)
+		time.sleep(1)
 
 def destroy():
 	p_R.stop()
