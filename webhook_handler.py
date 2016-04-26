@@ -76,7 +76,9 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         length = int(s.headers['Content-Length'])
         post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
-        # payload = json.loads(post_data['payload'][0])
+        print(type(post_data))
+	print(post_data)
+	# payload = json.loads(post_data['payload'][0])
         # handle_hook(payload)
         setColor(Green)
         time.sleep(5)
