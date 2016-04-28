@@ -1,14 +1,37 @@
 #!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
 import BaseHTTPServer
 import sys
 import time
 import urlparse
 import json
+import cgi
 
 import RPi.GPIO as GPIO
 import time
+
+import LCD1602
+import time
+
+def lcd_disp(line1, line2):
+        LCD1602.init(0x27, 1)   # init(slave address, background light)
+        LCD1602.write(0, 0, line1)
+        LCD1602.write(1, 1, line2)
+        time.sleep(2)
+                                                                                 
+def loop():
+        space = '                '                                               
+        greetings = 'Thank you for buying SunFounder Sensor Kit for Raspberry! ^_^'
+        greetings = space + greetings                                            
+        while True:                                                              
+                tmp = greetings
+                for i in range(0, len(greetings)):
+                        LCD1602.write(0, 0, tmp) 
+                        tmp = tmp[1:]
+                        time.sleep(0.8)
+                        LCD1602.clear()
+                                                                                 
+def destroy():
+        pass
 
 #colors = [0xFF00, 0x00FF, 0x0FF0, 0xF00F]
 Green = 0x00FF
@@ -74,10 +97,22 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                    for IP in ('192.30.252', '192.30.253', '192.30.254', '192.30.255')):
             s.send_error(403)
 
-        length = int(s.headers['Content-Length'])
-        post_data = urlparse.parse_qs(s.rfile.read(length).decode('utf-8'))
-        print(type(post_data))
-	print(post_data)
+	ctype, pdict = cgi.parse_header(s.headers['content-type'])
+	#print(ctype)
+	#print(pdict)
+        length = int(s.headers['content-length'])
+	#print(length)
+        post_data = json.loads(s.rfile.read(length))
+        #print(type(post_data))
+	
+	line1 = post_data['pusher']['name']
+	line2 = post_data['repository']['name']
+	
+	lcd_disp(line1, line2)	
+
+	#for key in post_data:
+	#	print(key)
+		
 	# payload = json.loads(post_data['payload'][0])
         # handle_hook(payload)
         setColor(Green)
