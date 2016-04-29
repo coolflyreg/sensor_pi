@@ -13,7 +13,7 @@ import time
 import LCD1602
 import time
 
-GPIO.setwarnings(False)
+# GPIO.setwarnings(False)
 
 def lcd_disp(line1, line2):
     LCD1602.init(0x27, 1)   # init(slave address, background light)
@@ -21,7 +21,7 @@ def lcd_disp(line1, line2):
     LCD1602.write(1, 1, line2)
     time.sleep(2)
 
-def loop():
+def lcd_loop():
     space = '                '
     greetings = 'Thank you for buying SunFounder Sensor Kit for Raspberry! ^_^'
     greetings = space + greetings
@@ -81,11 +81,12 @@ def destroy():
 
 HOST_NAME = sys.argv[1]
 PORT_NUMBER = int(sys.argv[2])
-
 BuzzerPin = 11
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(BuzzerPin, GPIO.OUT)
-GPIO.setup(BuzzerPin, GPIO.HIGH)
+
+def setup_buzzer():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(BuzzerPin, GPIO.OUT)
+    GPIO.output(BuzzerPin, GPIO.HIGH)
 
 def on():
     GPIO.output(BuzzerPin, GPIO.LOW)
@@ -93,19 +94,20 @@ def on():
 def off():
     GPIO.output(BuzzerPin, GPIO.HIGH)
 
-def beep(x):
+def beep(t):
     on()
-    time.sleep(x)
+    time.sleep(t)
     off()
-    time.sleep(x)
+    time.sleep(t)
 
-def loop(t):
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(BuzzerPin, GPIO.OUT)
+def alarm(t):
+    setup_buzzer()
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setup(BuzzerPin, GPIO.OUT)
     start = time.time()
     while time.time() - start <= t:
         beep(0.5)
-    destoryBuzzer()
+    # destoryBuzzer()
 
 def destoryBuzzer():
     GPIO.setmode(GPIO.BOARD)
@@ -133,13 +135,9 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             s.send_error(403)
 
         ctype, pdict = cgi.parse_header(s.headers['content-type'])
-	#print(ctype)
-	#print(pdict)
         length = int(s.headers['content-length'])
-	#print(length)
         post_data = json.loads(s.rfile.read(length))
         # pprint.pprint(post_data)
-        #print(type(post_data))
 
         if 'pusher' in post_data:
             line1 = post_data['pusher']['name']
@@ -159,7 +157,7 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # handle_hook(payload)
         # setColor(Green)
 
-        loop(3)
+        alarm(3)
         # time.sleep(5)
         # setColor(Off)
 
@@ -176,5 +174,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    destoryBuzzer()
+    # destoryBuzzer()
     print time.asctime(), "Server Stops - %s:%s" % (HOST_NAME, PORT_NUMBER)
